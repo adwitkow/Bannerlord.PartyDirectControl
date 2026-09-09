@@ -1,0 +1,8 @@
+<Project>
+    
+  <PropertyGroup>
+    <ModuleId>Bannerlord.PartyDirectControl</ModuleId>
+    <ModuleName>Party Direct Control</ModuleName>
+  </PropertyGroup>
+
+</Project>

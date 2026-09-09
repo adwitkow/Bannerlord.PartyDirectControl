@@ -1,0 +1,15 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/build/">
+    <File Path="build/BuildResources.props" />
+    <File Path="build/BuildResources.targets" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="supported-game-versions.txt" />
+  </Folder>
+  <Project Path="Bannerlord.PartyDirectControl/Bannerlord.PartyDirectControl.csproj">
+    <Platform Project="x64" />
+  </Project>
+</Solution>

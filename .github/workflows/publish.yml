@@ -1,0 +1,16 @@
+name: Publish
+
+on:
+  workflow_run:
+    workflows: ["Build"]
+    types:
+      - completed
+    branches:
+      - 'release/**'
+
+jobs:
+  publish:
+    uses: adwitkow/bannerlord-workflow-templates/.github/workflows/publish.yml@master
+    permissions:
+      actions: read
+      contents: write
