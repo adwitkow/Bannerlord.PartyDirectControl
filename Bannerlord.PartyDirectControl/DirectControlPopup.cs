@@ -93,8 +93,7 @@ internal class DirectControlPopup
             : mobileParty.ActualClan == mainHero.Clan;
 
         return belongsToPlayer
-            && IsWithinSeeingRange(mobileParty)
-            && !IsInAnothersArmy(mobileParty);
+            && IsWithinSeeingRange(mobileParty);
     }
 
     private static InquiryElement ConvertToInquiryElement(MobileParty mobileParty)
@@ -116,10 +115,5 @@ internal class DirectControlPopup
     {
         var distance = mobileParty.GetPosition2D.Distance(MobileParty.MainParty.GetPosition2D);
         return distance <= MobileParty.MainParty.SeeingRange;
-    }
-
-    private static bool IsInAnothersArmy(MobileParty mobileParty)
-    {
-        return mobileParty.Army is not null && mobileParty.Army.LeaderParty != mobileParty;
     }
 }

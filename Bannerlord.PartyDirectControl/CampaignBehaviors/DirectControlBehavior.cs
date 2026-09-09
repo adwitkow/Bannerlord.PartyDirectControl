@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
 
 namespace Bannerlord.PartyDirectControl.CampaignBehaviors;
@@ -27,6 +28,7 @@ public class DirectControlBehavior : CampaignBehaviorBase
         _partiesUnderControl.Clear();
         _partiesUnderControl.AddRange(parties);
 
+        ApplyToPartiesUnderControl(LeaveArmy);
         ApplyToPartiesUnderControl(party => PartyActions.EscortParty(party, MobileParty.MainParty));
     }
 
@@ -74,5 +76,24 @@ public class DirectControlBehavior : CampaignBehaviorBase
         party.Ai.SetDoNotMakeNewDecisions(false);
 
         _partiesUnderControl.Remove(party);
+    }
+
+    private static void LeaveArmy(MobileParty party)
+    {
+        if (party.Army is null || party.Army.LeaderParty == party)
+        {
+            return;
+        }
+
+        RefundInfluence(party);
+
+        party.Army = null;
+    }
+
+    private static void RefundInfluence(MobileParty party)
+    {
+        int influence = Campaign.Current.Models.ArmyManagementCalculationModel
+            .CalculatePartyInfluenceCost(party.Army.LeaderParty, party);
+        ChangeClanInfluenceAction.Apply(party.Army.LeaderParty.LeaderHero.Clan, influence);
     }
 }
