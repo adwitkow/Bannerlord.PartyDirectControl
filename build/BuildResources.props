@@ -2,7 +2,7 @@
     
   <PropertyGroup>
     <ModuleId>Bannerlord.PartyDirectControl</ModuleId>
-    <ModuleName>Party Direct Control</ModuleName>
+    <ModuleName>Direct Party Control</ModuleName>
   </PropertyGroup>
 
 </Project>
