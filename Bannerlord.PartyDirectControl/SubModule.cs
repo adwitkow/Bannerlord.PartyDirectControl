@@ -2,6 +2,9 @@
 using Bannerlord.PartyDirectControl.GameModels;
 using Bannerlord.PartyDirectControl.Patches;
 using HarmonyLib;
+#if LOWER_THAN_1_3
+using System.Linq;
+#endif
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameState;
@@ -47,7 +50,15 @@ public class SubModule : MBSubModuleBase
 
         DirectControlBehavior = new DirectControlBehavior();
         campaignGameStarter.AddBehavior(DirectControlBehavior);
+
+#if LOWER_THAN_1_3
+        var baseModel = gameStarterObject.Models
+            .OfType<ArmyManagementCalculationModel>()
+            .LastOrDefault();
+        gameStarterObject.AddModel(new DirectControlArmyManagementCalculationModel(baseModel));
+#else
         campaignGameStarter.AddModel<ArmyManagementCalculationModel>(new DirectControlArmyManagementCalculationModel());
+#endif
 
         _directControlPopup = new DirectControlPopup(DirectControlBehavior);
     }

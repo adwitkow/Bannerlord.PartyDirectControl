@@ -4,7 +4,9 @@ using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
+#if !LOWER_THAN_1_3
 using TaleWorlds.Core.ImageIdentifiers;
+#endif
 using TaleWorlds.Localization;
 
 namespace Bannerlord.PartyDirectControl;
@@ -98,7 +100,11 @@ internal class DirectControlPopup
     private static InquiryElement ConvertToInquiryElement(MobileParty mobileParty)
     {
         var characterCode = CharacterCode.CreateFrom(mobileParty.LeaderHero?.CharacterObject);
+#if LOWER_THAN_1_3
+        var imageIdentifier = new ImageIdentifier(characterCode);
+#else
         var imageIdentifier = new CharacterImageIdentifier(characterCode);
+#endif
 
         return new InquiryElement(
             identifier: mobileParty,

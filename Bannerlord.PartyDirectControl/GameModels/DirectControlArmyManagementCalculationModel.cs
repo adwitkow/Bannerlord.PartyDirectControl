@@ -1,13 +1,26 @@
-﻿using TaleWorlds.CampaignSystem;
+﻿using System.Collections.Generic;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Party;
+#if !LOWER_THAN_1_3
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
+#endif
 
 namespace Bannerlord.PartyDirectControl.GameModels;
 
 public class DirectControlArmyManagementCalculationModel : ArmyManagementCalculationModel
 {
+#if LOWER_THAN_1_3
+    public DirectControlArmyManagementCalculationModel(ArmyManagementCalculationModel baseModel)
+    {
+        BaseModel = baseModel;
+    }
+
+    private ArmyManagementCalculationModel BaseModel { get; }
+#endif
+
+#if !LOWER_THAN_1_4
     public override bool CanLordCreateArmy(MobileParty leaderParty, out MBList<MobileParty> possibleArmyMembers)
     {
         var result = BaseModel.CanLordCreateArmy(leaderParty, out possibleArmyMembers);
@@ -16,8 +29,18 @@ public class DirectControlArmyManagementCalculationModel : ArmyManagementCalcula
 
         return result;
     }
+#else
+    public override List<MobileParty> GetMobilePartiesToCallToArmy(MobileParty leaderParty)
+    {
+        var result = BaseModel.GetMobilePartiesToCallToArmy(leaderParty);
 
-    private static void RemoveForbiddenPartiesFromArmyCall(MobileParty thinkingParty, MBList<MobileParty>? partiesToCallToArmy)
+        RemoveForbiddenPartiesFromArmyCall(leaderParty, result);
+
+        return result;
+    }
+#endif
+
+    private static void RemoveForbiddenPartiesFromArmyCall(MobileParty thinkingParty, IList<MobileParty>? partiesToCallToArmy)
     {
         if (partiesToCallToArmy is null)
         {
@@ -36,6 +59,28 @@ public class DirectControlArmyManagementCalculationModel : ArmyManagementCalcula
     }
 
     #region Pass-through overrides
+    public override int InfluenceValuePerGold => BaseModel.InfluenceValuePerGold;
+
+    public override int AverageCallToArmyCost => BaseModel.AverageCallToArmyCost;
+
+    public override int CohesionThresholdForDispersion => BaseModel.CohesionThresholdForDispersion;
+
+#if LOWER_THAN_1_3
+    public override bool CheckPartyEligibility(MobileParty party)
+    {
+        return BaseModel.CheckPartyEligibility(party);
+    }
+
+    public override int GetCohesionBoostGoldCost(Army army, float percentageToBoost = 100)
+    {
+        return BaseModel.GetCohesionBoostGoldCost(army, percentageToBoost);
+    }
+
+    public override int GetPartyStrength(PartyBase party)
+    {
+        return BaseModel.GetPartyStrength(party);
+    }
+#else
     public override float AIMobilePartySizeRatioToCallToArmy => BaseModel.AIMobilePartySizeRatioToCallToArmy;
 
     public override float PlayerMobilePartySizeRatioToCallToArmy => BaseModel.PlayerMobilePartySizeRatioToCallToArmy;
@@ -44,13 +89,18 @@ public class DirectControlArmyManagementCalculationModel : ArmyManagementCalcula
 
     public override float MaximumDistanceToCallToArmy => BaseModel.MaximumDistanceToCallToArmy;
 
-    public override int InfluenceValuePerGold => BaseModel.InfluenceValuePerGold;
-
-    public override int AverageCallToArmyCost => BaseModel.AverageCallToArmyCost;
-
-    public override int CohesionThresholdForDispersion => BaseModel.CohesionThresholdForDispersion;
-
     public override float MaximumWaitTime => BaseModel.MaximumWaitTime;
+
+    public override bool CanPlayerCreateArmy(out TextObject disabledReason)
+    {
+        return BaseModel.CanPlayerCreateArmy(out disabledReason);
+    }
+
+    public override bool CheckPartyEligibility(MobileParty party, out TextObject explanation)
+    {
+        return BaseModel.CheckPartyEligibility(party, out explanation);
+    }
+#endif
 
     public override ExplainedNumber CalculateDailyCohesionChange(Army army, bool includeDescriptions = false)
     {
@@ -70,16 +120,6 @@ public class DirectControlArmyManagementCalculationModel : ArmyManagementCalcula
     public override int CalculateTotalInfluenceCost(Army army, float percentage)
     {
         return BaseModel.CalculateTotalInfluenceCost(army, percentage);
-    }
-
-    public override bool CanPlayerCreateArmy(out TextObject disabledReason)
-    {
-        return BaseModel.CanPlayerCreateArmy(out disabledReason);
-    }
-
-    public override bool CheckPartyEligibility(MobileParty party, out TextObject explanation)
-    {
-        return BaseModel.CheckPartyEligibility(party, out explanation);
     }
 
     public override float DailyBeingAtArmyInfluenceAward(MobileParty armyMemberParty)
