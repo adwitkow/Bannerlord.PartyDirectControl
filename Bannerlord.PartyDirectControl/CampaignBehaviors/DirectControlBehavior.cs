@@ -25,6 +25,8 @@ public class DirectControlBehavior : CampaignBehaviorBase
 
     public void RepopulatePartiesUnderControl(IEnumerable<MobileParty> parties)
     {
+        ApplyToPartiesUnderControl(ResetAi);
+
         _partiesUnderControl.Clear();
         _partiesUnderControl.AddRange(parties);
 
@@ -72,10 +74,15 @@ public class DirectControlBehavior : CampaignBehaviorBase
 
     private void RemoveFromControl(MobileParty party)
     {
-        party.Ai.RethinkAtNextHourlyTick = true;
-        party.Ai.SetDoNotMakeNewDecisions(false);
+        ResetAi(party);
 
         _partiesUnderControl.Remove(party);
+    }
+
+    private void ResetAi(MobileParty party)
+    {
+        party.Ai.RethinkAtNextHourlyTick = true;
+        party.Ai.SetDoNotMakeNewDecisions(false);
     }
 
     private static void LeaveArmy(MobileParty party)
