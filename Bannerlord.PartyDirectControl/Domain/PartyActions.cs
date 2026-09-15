@@ -2,7 +2,7 @@
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 
-namespace Bannerlord.PartyDirectControl;
+namespace Bannerlord.PartyDirectControl.Domain;
 
 public static class PartyActions
 {
