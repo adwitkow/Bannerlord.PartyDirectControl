@@ -2,6 +2,7 @@
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.InputSystem;
 
 namespace Bannerlord.PartyDirectControl.Domain;
 
@@ -90,6 +91,22 @@ public static class DirectControl
 
     private static bool ShouldControlDirectly()
     {
-        return Hotkeys.ModifierKey.IsHeld;
+        GameKey modifierKey = Hotkeys.ModifierKey;
+        
+        InputKey inputKey;
+        if (modifierKey.KeyboardKey is not null)
+        {
+            inputKey = modifierKey.KeyboardKey.InputKey;
+        }
+        else if (modifierKey.ControllerKey is not null)
+        {
+            inputKey = modifierKey.ControllerKey.InputKey;
+        }
+        else
+        {
+            inputKey = InputKey.Invalid;
+        }
+
+        return Input.IsDown(inputKey);
     }
 }

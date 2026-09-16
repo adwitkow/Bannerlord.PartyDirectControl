@@ -52,16 +52,4 @@ public class DirectControlModifierKey : HotKeyBase
         DefaultKey = InputKey.LeftAlt;
         Category = HotKeyManager.Categories[HotKeyCategory.CampaignMap];
     }
-
-    public bool IsHeld { get; private set; }
-
-    protected override void OnPressed()
-    {
-        IsHeld = true;
-    }
-
-    protected override void OnReleased()
-    {
-        IsHeld = false;
-    }
 }
