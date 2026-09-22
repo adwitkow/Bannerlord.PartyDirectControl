@@ -3,11 +3,13 @@ using Bannerlord.PartyDirectControl.Domain;
 using HarmonyLib;
 using HarmonyLib.PatchBuilder;
 using NavalDLC.View.Map.Visuals;
+using System.Runtime.CompilerServices;
 
 namespace Bannerlord.PartyDirectControl.Patches;
 
 public partial class DirectCommandPatches
 {
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ApplyForNavalDlc(Harmony harmony)
     {
         harmony.Patch<NavalMobilePartyVisual>()
