@@ -10,8 +10,6 @@ public static class PartyActions
     {
         var navigationData = CalculateNavigationData(party, target);
 
-        party.Ai.SetDoNotMakeNewDecisions(true);
-
 #if LOWER_THAN_1_3
         SetPartyAiAction.GetActionForVisitingSettlement(party, target);
 #else
@@ -27,8 +25,6 @@ public static class PartyActions
     public static void DefendSettlement(MobileParty party, Settlement target)
     {
         var navigationData = CalculateNavigationData(party, target);
-
-        party.Ai.SetDoNotMakeNewDecisions(true);
 
 #if LOWER_THAN_1_3
         SetPartyAiAction.GetActionForDefendingSettlement(party, target);
@@ -46,8 +42,6 @@ public static class PartyActions
     {
         var navigationData = CalculateNavigationData(party, target);
 
-        party.Ai.SetDoNotMakeNewDecisions(true);
-
 #if LOWER_THAN_1_3
         SetPartyAiAction.GetActionForBesiegingSettlement(party, target);
 #else
@@ -62,8 +56,6 @@ public static class PartyActions
     public static void RaidVillage(MobileParty party, Settlement target)
     {
         var navigationData = CalculateNavigationData(party, target);
-
-        party.Ai.SetDoNotMakeNewDecisions(true);
 
 #if LOWER_THAN_1_3
         SetPartyAiAction.GetActionForRaidingSettlement(party, target);
@@ -87,8 +79,6 @@ public static class PartyActions
     {
         var navigationData = CalculateNavigationData(party, target);
 
-        party.Ai.SetDoNotMakeNewDecisions(true);
-
 #if LOWER_THAN_1_3
         SetPartyAiAction.GetActionForEngagingParty(party, target);
 #else
@@ -103,8 +93,6 @@ public static class PartyActions
     public static void EscortParty(MobileParty party, MobileParty target)
     {
         var navigationData = CalculateNavigationData(party, target);
-
-        party.Ai.SetDoNotMakeNewDecisions(true);
 
 #if LOWER_THAN_1_3
         SetPartyAiAction.GetActionForEscortingParty(party, target);
