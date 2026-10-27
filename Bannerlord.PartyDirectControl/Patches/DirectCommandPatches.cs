@@ -1,10 +1,10 @@
 ﻿using HarmonyLib;
+using HarmonyLib.PatchBuilder;
 using TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors;
+using TaleWorlds.CampaignSystem.Party;
 #if !LOWER_THAN_1_3
 using Bannerlord.PartyDirectControl.Domain;
-using HarmonyLib.PatchBuilder;
 using SandBox.View.Map.Visuals;
-using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.ModuleManager;
 #endif
 
