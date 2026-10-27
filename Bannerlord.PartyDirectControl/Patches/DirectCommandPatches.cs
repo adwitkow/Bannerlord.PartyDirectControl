@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors;
 #if !LOWER_THAN_1_3
 using Bannerlord.PartyDirectControl.Domain;
 using HarmonyLib.PatchBuilder;
@@ -13,6 +14,10 @@ public partial class DirectCommandPatches
 {
     public static void Apply(Harmony harmony)
     {
+        harmony.Patch<AiPartyThinkBehavior>()
+            .Method("PartyHourlyAiTick")
+                .Prefix(AiPartyThinkBehavior_PartyHourlyAiTick_Prefix);
+
 #if LOWER_THAN_1_3
         ApplyForLowerThan1_3(harmony);
 #else
@@ -31,6 +36,13 @@ public partial class DirectCommandPatches
             ApplyForNavalDlc(harmony);
         }
 #endif
+    }
+
+    public static bool AiPartyThinkBehavior_PartyHourlyAiTick_Prefix(MobileParty mobileParty)
+    {
+        var underControl = SubModule.DirectControlBehavior.IsPartyUnderControl(mobileParty);
+
+        return !underControl;
     }
 
 #if !LOWER_THAN_1_3

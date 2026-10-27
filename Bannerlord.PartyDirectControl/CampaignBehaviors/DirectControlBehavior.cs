@@ -3,17 +3,20 @@ using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Settlements;
 
 namespace Bannerlord.PartyDirectControl.CampaignBehaviors;
 
 public class DirectControlBehavior : CampaignBehaviorBase
 {
     private List<MobileParty> _partiesUnderControl = new();
+    private IMapPoint? _currentTarget;
 
     public override void RegisterEvents()
     {
-        CampaignEvents.HourlyTickPartyEvent.AddNonSerializedListener(this, OnHourlyTickParty);
+        CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
         CampaignEvents.OnPartyJoinedArmyEvent.AddNonSerializedListener(this, OnPartyJoinedArmy);
         CampaignEvents.MobilePartyCreated.AddNonSerializedListener(this, OnMobilePartyCreated);
         CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyed);
@@ -22,12 +25,11 @@ public class DirectControlBehavior : CampaignBehaviorBase
     public override void SyncData(IDataStore dataStore)
     {
         dataStore.SyncData(nameof(_partiesUnderControl), ref _partiesUnderControl);
+        dataStore.SyncData(nameof(_currentTarget), ref _currentTarget);
     }
 
     public void RepopulatePartiesUnderControl(IEnumerable<MobileParty> parties)
     {
-        ApplyToPartiesUnderControl(ResetAi);
-
         _partiesUnderControl.Clear();
         _partiesUnderControl.AddRange(parties);
 
@@ -45,16 +47,24 @@ public class DirectControlBehavior : CampaignBehaviorBase
         return _partiesUnderControl.Contains(party);
     }
 
-    private void OnHourlyTickParty(MobileParty party)
+    public void SetTarget(IMapPoint? target)
     {
-        if (!_partiesUnderControl.Contains(party))
-        {
-            return;
-        }
+        _currentTarget = target;
+    }
 
-        if (party.DefaultBehavior == AiBehavior.Hold)
+    private void OnHourlyTick()
+    {
+        if (_currentTarget is MobileParty targetParty)
         {
-            PartyActions.EscortParty(party, MobileParty.MainParty);
+            DirectControl.TargetParty(targetParty);
+        }
+        else if (_currentTarget is Settlement targetSettlement)
+        {
+            DirectControl.TargetSettlement(targetSettlement);
+        }
+        else
+        {
+            DirectControl.FollowMainParty();
         }
     }
 
@@ -71,19 +81,16 @@ public class DirectControlBehavior : CampaignBehaviorBase
     private void OnMobilePartyDestroyed(MobileParty destroyedParty, PartyBase destroyerParty)
     {
         RemoveFromControl(destroyedParty);
+
+        if (destroyedParty == _currentTarget)
+        {
+            SetTarget(null);
+        }
     }
 
     private void RemoveFromControl(MobileParty party)
     {
-        ResetAi(party);
-
         _partiesUnderControl.Remove(party);
-    }
-
-    private void ResetAi(MobileParty party)
-    {
-        party.Ai.RethinkAtNextHourlyTick = true;
-        party.Ai.SetDoNotMakeNewDecisions(false);
     }
 
     private static void LeaveArmy(MobileParty party)

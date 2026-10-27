@@ -15,8 +15,7 @@ public static class DirectControl
             return false;
         }
 
-        SubModule.DirectControlBehavior.ApplyToPartiesUnderControl(
-            party => PartyActions.EscortParty(party, MobileParty.MainParty));
+        FollowMainParty();
 
         return true;
     }
@@ -28,6 +27,32 @@ public static class DirectControl
             return false;
         }
 
+        TargetParty(target);
+
+        return true;
+    }
+
+    public static bool HandleInteractionWithSettlement(Settlement target)
+    {
+        if (!ShouldControlDirectly())
+        {
+            return false;
+        }
+
+        TargetSettlement(target);
+
+        return true;
+    }
+
+    public static void FollowMainParty()
+    {
+        SubModule.DirectControlBehavior.SetTarget(null);
+        SubModule.DirectControlBehavior.ApplyToPartiesUnderControl(
+            party => PartyActions.EscortParty(party, MobileParty.MainParty));
+    }
+
+    public static void TargetParty(MobileParty target)
+    {
         var faction = Hero.MainHero.MapFaction;
 
         Action<MobileParty> action;
@@ -40,18 +65,12 @@ public static class DirectControl
             action = party => PartyActions.EscortParty(party, target);
         }
 
+        SubModule.DirectControlBehavior.SetTarget(target);
         SubModule.DirectControlBehavior.ApplyToPartiesUnderControl(action);
-
-        return true;
     }
 
-    public static bool HandleInteractionWithSettlement(Settlement target)
+    public static void TargetSettlement(Settlement target)
     {
-        if (!ShouldControlDirectly())
-        {
-            return false;
-        }
-
         var faction = Hero.MainHero.MapFaction;
         var targetFaction = target.MapFaction;
 
@@ -84,9 +103,8 @@ public static class DirectControl
             }
         }
 
+        SubModule.DirectControlBehavior.SetTarget(target);
         SubModule.DirectControlBehavior.ApplyToPartiesUnderControl(action);
-
-        return true;
     }
 
     private static bool ShouldControlDirectly()
